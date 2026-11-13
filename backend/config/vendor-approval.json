@@ -1,0 +1,33 @@
+{
+  "id": "vendor-approval",
+  "name": "Vendor approval",
+  "version": 1,
+  "description": "Screen a supplier before they can be onboarded.",
+  "maxAttempts": 3,
+  "fields": {
+    "vendorName": { "type": "string", "required": true, "minLength": 2 },
+    "annualSpend": { "type": "number", "required": true, "min": 0 },
+    "riskScore": { "type": "number", "required": true, "min": 0, "max": 100 },
+    "blacklisted": { "type": "boolean", "required": true },
+    "documentsComplete": { "type": "boolean", "required": true }
+  },
+  "stages": [
+    {
+      "id": "screening", "name": "Initial screening", "type": "rules",
+      "rules": [
+        { "id": "VEN-01", "field": "blacklisted", "operator": "eq", "value": true, "outcome": "REJECTED", "reason": "Vendor is on the exclusion list." },
+        { "id": "VEN-02", "field": "documentsComplete", "operator": "eq", "value": false, "outcome": "MANUAL_REVIEW", "reason": "Required vendor documents are missing." }
+      ]
+    },
+    { "id": "verification", "name": "Compliance service", "type": "dependency" },
+    {
+      "id": "limits", "name": "Risk and spend limits", "type": "rules",
+      "rules": [
+        { "id": "VEN-03", "field": "riskScore", "operator": "gte", "value": 70, "outcome": "MANUAL_REVIEW", "reason": "Risk score is above the automatic approval threshold." },
+        { "id": "VEN-04", "field": "annualSpend", "operator": "gt", "value": 500000, "outcome": "MANUAL_REVIEW", "reason": "Annual spend requires a second approval." }
+      ]
+    }
+  ],
+  "defaultOutcome": "APPROVED",
+  "defaultReason": "Screening, verification and limits passed."
+}

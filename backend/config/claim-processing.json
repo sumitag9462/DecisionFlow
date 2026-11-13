@@ -1,0 +1,33 @@
+{
+  "id": "claim-processing",
+  "name": "Insurance claim",
+  "version": 1,
+  "description": "Check claim eligibility and route exceptions to an adjuster.",
+  "maxAttempts": 3,
+  "fields": {
+    "claimReference": { "type": "string", "required": true, "minLength": 3 },
+    "claimAmount": { "type": "number", "required": true, "min": 1 },
+    "policyActive": { "type": "boolean", "required": true },
+    "documentsComplete": { "type": "boolean", "required": true },
+    "fraudScore": { "type": "number", "required": true, "min": 0, "max": 100 }
+  },
+  "stages": [
+    {
+      "id": "eligibility", "name": "Policy and documents", "type": "rules",
+      "rules": [
+        { "id": "CLM-01", "field": "policyActive", "operator": "eq", "value": false, "outcome": "REJECTED", "reason": "Policy is not active." },
+        { "id": "CLM-02", "field": "documentsComplete", "operator": "eq", "value": false, "outcome": "MANUAL_REVIEW", "reason": "Supporting claim documents are incomplete." }
+      ]
+    },
+    { "id": "verification", "name": "Policy verification service", "type": "dependency" },
+    {
+      "id": "claim-limits", "name": "Claim risk review", "type": "rules",
+      "rules": [
+        { "id": "CLM-03", "field": "fraudScore", "operator": "gte", "value": 60, "outcome": "MANUAL_REVIEW", "reason": "Fraud score requires an investigator." },
+        { "id": "CLM-04", "field": "claimAmount", "operator": "gt", "value": 100000, "outcome": "MANUAL_REVIEW", "reason": "Claim amount exceeds the auto-settlement limit." }
+      ]
+    }
+  ],
+  "defaultOutcome": "APPROVED",
+  "defaultReason": "Policy is eligible and the claim is within automated limits."
+}

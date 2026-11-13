@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: loads two separate valid workflow definitions
+ok 1 - loads two separate valid workflow definitions
+  ---
+  duration_ms: 0.57825
+  type: 'test'
+  ...
+# Subtest: approves vendor with no rule match
+ok 2 - approves vendor with no rule match
+  ---
+  duration_ms: 2.585041
+  type: 'test'
+  ...
+# Subtest: rejects blacklisted vendor before external verification
+ok 3 - rejects blacklisted vendor before external verification
+  ---
+  duration_ms: 0.288375
+  type: 'test'
+  ...
+# Subtest: routes missing vendor documents to manual review
+ok 4 - routes missing vendor documents to manual review
+  ---
+  duration_ms: 0.238042
+  type: 'test'
+  ...
+# Subtest: flags high annual spend for review
+ok 5 - flags high annual spend for review
+  ---
+  duration_ms: 0.244
+  type: 'test'
+  ...
+# Subtest: claim workflow rejects inactive policy
+ok 6 - claim workflow rejects inactive policy
+  ---
+  duration_ms: 0.21925
+  type: 'test'
+  ...
+# Subtest: claim workflow routes fraud risk to review
+ok 7 - claim workflow routes fraud risk to review
+  ---
+  duration_ms: 0.21925
+  type: 'test'
+  ...
+# Subtest: fails once, persists retry state, then succeeds
+ok 8 - fails once, persists retry state, then succeeds
+  ---
+  duration_ms: 0.364084
+  type: 'test'
+  ...
+# Subtest: permanent dependency failures stop after configured attempts
+ok 9 - permanent dependency failures stop after configured attempts
+  ---
+  duration_ms: 0.618
+  type: 'test'
+  ...
+# Subtest: identical idempotency key returns the original record without repeating work
+ok 10 - identical idempotency key returns the original record without repeating work
+  ---
+  duration_ms: 0.305625
+  type: 'test'
+  ...
+# Subtest: reused idempotency key with different payload is a conflict
+ok 11 - reused idempotency key with different payload is a conflict
+  ---
+  duration_ms: 0.261834
+  type: 'test'
+  ...
+# Subtest: twenty parallel identical intakes create only one document
+ok 12 - twenty parallel identical intakes create only one document
+  ---
+  duration_ms: 0.697084
+  type: 'test'
+  ...
+# Subtest: manual reviewer can approve a request with an auditable reason
+ok 13 - manual reviewer can approve a request with an auditable reason
+  ---
+  duration_ms: 0.4135
+  type: 'test'
+  ...
+# Subtest: rejects invalid data, including fields absent from schema
+ok 14 - rejects invalid data, including fields absent from schema
+  ---
+  duration_ms: 0.144458
+  type: 'test'
+  ...
+# Subtest: rule edit affects new requests, not old version-pinned requests
+ok 15 - rule edit affects new requests, not old version-pinned requests
+  ---
+  duration_ms: 0.275083
+  type: 'test'
+  ...
+# Subtest: lease expiry allows manual recovery of a crashed worker
+ok 16 - lease expiry allows manual recovery of a crashed worker
+  ---
+  duration_ms: 0.315417
+  type: 'test'
+  ...
+# Subtest: one actor wins a concurrent retry claim
+ok 17 - one actor wins a concurrent retry claim
+  ---
+  duration_ms: 0.442667
+  type: 'test'
+  ...
+# Subtest: audit events have accurate state transitions and rule references
+ok 18 - audit events have accurate state transitions and rule references
+  ---
+  duration_ms: 0.598167
+  type: 'test'
+  ...
+# Subtest: same key can be used for independent workflows
+ok 19 - same key can be used for independent workflows
+  ---
+  duration_ms: 0.251958
+  type: 'test'
+  ...
+# Subtest: idempotency replay succeeds after policy adds a required field
+ok 20 - idempotency replay succeeds after policy adds a required field
+  ---
+  duration_ms: 0.195292
+  type: 'test'
+  ...
+# Subtest: final-attempt worker crash recovers to FAILED on lease expiry
+ok 21 - final-attempt worker crash recovers to FAILED on lease expiry
+  ---
+  duration_ms: 0.405208
+  type: 'test'
+  ...
+# Subtest: repeated recovery on final-attempt crash does not duplicate events
+ok 22 - repeated recovery on final-attempt crash does not duplicate events
+  ---
+  duration_ms: 0.425209
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 71.368333

@@ -1,0 +1,665 @@
+{
+  "note": "Representative outputs from the actual service logic using the in-memory test repository; no MongoDB server is involved in generating this example.",
+  "approved": {
+    "workflowId": "vendor-approval",
+    "policyVersion": 1,
+    "policySnapshot": {
+      "id": "vendor-approval",
+      "name": "Vendor approval",
+      "version": 1,
+      "description": "Screen a supplier before they can be onboarded.",
+      "maxAttempts": 3,
+      "fields": {
+        "vendorName": {
+          "type": "string",
+          "required": true,
+          "minLength": 2
+        },
+        "annualSpend": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "riskScore": {
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "max": 100
+        },
+        "blacklisted": {
+          "type": "boolean",
+          "required": true
+        },
+        "documentsComplete": {
+          "type": "boolean",
+          "required": true
+        }
+      },
+      "stages": [
+        {
+          "id": "screening",
+          "name": "Initial screening",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-01",
+              "field": "blacklisted",
+              "operator": "eq",
+              "value": true,
+              "outcome": "REJECTED",
+              "reason": "Vendor is on the exclusion list."
+            },
+            {
+              "id": "VEN-02",
+              "field": "documentsComplete",
+              "operator": "eq",
+              "value": false,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Required vendor documents are missing."
+            }
+          ]
+        },
+        {
+          "id": "verification",
+          "name": "Compliance service",
+          "type": "dependency"
+        },
+        {
+          "id": "limits",
+          "name": "Risk and spend limits",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-03",
+              "field": "riskScore",
+              "operator": "gte",
+              "value": 70,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Risk score is above the automatic approval threshold."
+            },
+            {
+              "id": "VEN-04",
+              "field": "annualSpend",
+              "operator": "gt",
+              "value": 500000,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Annual spend requires a second approval."
+            }
+          ]
+        }
+      ],
+      "defaultOutcome": "APPROVED",
+      "defaultReason": "Screening, verification and limits passed."
+    },
+    "idempotencyKey": "recorded-demo-vendor-01",
+    "payloadHash": "77814a24afdd07277463f68ee9842d1808af24be1d8e0268695bea331175ea41",
+    "data": {
+      "vendorName": "Northwind Supplies",
+      "annualSpend": 150000,
+      "riskScore": 19,
+      "blacklisted": false,
+      "documentsComplete": true
+    },
+    "simulation": "ok",
+    "status": "APPROVED",
+    "attempts": 1,
+    "trace": [
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-01",
+        "field": "blacklisted",
+        "operator": "eq",
+        "actual": false,
+        "expected": true,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-02",
+        "field": "documentsComplete",
+        "operator": "eq",
+        "actual": true,
+        "expected": false,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "verification",
+        "stageName": "Compliance service",
+        "kind": "dependency",
+        "outcome": "OK",
+        "reference": "SIM-VENDOR-APPROVAL-1"
+      },
+      {
+        "attempt": 1,
+        "stageId": "limits",
+        "stageName": "Risk and spend limits",
+        "kind": "rule",
+        "ruleId": "VEN-03",
+        "field": "riskScore",
+        "operator": "gte",
+        "actual": 19,
+        "expected": 70,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "limits",
+        "stageName": "Risk and spend limits",
+        "kind": "rule",
+        "ruleId": "VEN-04",
+        "field": "annualSpend",
+        "operator": "gt",
+        "actual": 150000,
+        "expected": 500000,
+        "matched": false,
+        "reason": "Condition not met"
+      }
+    ],
+    "decision": null,
+    "leaseUntil": null,
+    "nextRetryAt": null,
+    "audit": [
+      {
+        "at": "2026-11-13T09:06:59.839Z",
+        "type": "REQUEST_RECEIVED",
+        "from": null,
+        "to": "RECEIVED",
+        "actor": "api",
+        "detail": {
+          "policyVersion": 1
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.840Z",
+        "type": "ATTEMPT_STARTED",
+        "from": "RECEIVED",
+        "to": "PROCESSING",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "recoveredLease": false
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "DECISION_RECORDED",
+        "from": "PROCESSING",
+        "to": "APPROVED",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "reason": "Screening, verification and limits passed.",
+          "matchedRule": null,
+          "nextRetryAt": null
+        }
+      }
+    ],
+    "id": "000000000000000000000001",
+    "createdAt": "2026-11-13T09:06:59.840Z",
+    "updatedAt": "2026-11-13T09:06:59.841Z",
+    "reason": "Screening, verification and limits passed.",
+    "matchedRule": null
+  },
+  "retryBefore": {
+    "workflowId": "vendor-approval",
+    "policyVersion": 1,
+    "policySnapshot": {
+      "id": "vendor-approval",
+      "name": "Vendor approval",
+      "version": 1,
+      "description": "Screen a supplier before they can be onboarded.",
+      "maxAttempts": 3,
+      "fields": {
+        "vendorName": {
+          "type": "string",
+          "required": true,
+          "minLength": 2
+        },
+        "annualSpend": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "riskScore": {
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "max": 100
+        },
+        "blacklisted": {
+          "type": "boolean",
+          "required": true
+        },
+        "documentsComplete": {
+          "type": "boolean",
+          "required": true
+        }
+      },
+      "stages": [
+        {
+          "id": "screening",
+          "name": "Initial screening",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-01",
+              "field": "blacklisted",
+              "operator": "eq",
+              "value": true,
+              "outcome": "REJECTED",
+              "reason": "Vendor is on the exclusion list."
+            },
+            {
+              "id": "VEN-02",
+              "field": "documentsComplete",
+              "operator": "eq",
+              "value": false,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Required vendor documents are missing."
+            }
+          ]
+        },
+        {
+          "id": "verification",
+          "name": "Compliance service",
+          "type": "dependency"
+        },
+        {
+          "id": "limits",
+          "name": "Risk and spend limits",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-03",
+              "field": "riskScore",
+              "operator": "gte",
+              "value": 70,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Risk score is above the automatic approval threshold."
+            },
+            {
+              "id": "VEN-04",
+              "field": "annualSpend",
+              "operator": "gt",
+              "value": 500000,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Annual spend requires a second approval."
+            }
+          ]
+        }
+      ],
+      "defaultOutcome": "APPROVED",
+      "defaultReason": "Screening, verification and limits passed."
+    },
+    "idempotencyKey": "recorded-demo-vendor-02",
+    "payloadHash": "2540e7dd15677f42b4fc241d97990c56859511c082e63a709a81ad4ef9ecf795",
+    "data": {
+      "vendorName": "Northwind Supplies",
+      "annualSpend": 150000,
+      "riskScore": 19,
+      "blacklisted": false,
+      "documentsComplete": true
+    },
+    "simulation": "fail-once",
+    "status": "RETRY_PENDING",
+    "attempts": 1,
+    "trace": [
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-01",
+        "field": "blacklisted",
+        "operator": "eq",
+        "actual": false,
+        "expected": true,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-02",
+        "field": "documentsComplete",
+        "operator": "eq",
+        "actual": true,
+        "expected": false,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "verification",
+        "stageName": "Compliance service",
+        "kind": "dependency",
+        "outcome": "TEMPORARY_FAILURE",
+        "reason": "Compliance service returned 503"
+      }
+    ],
+    "decision": null,
+    "leaseUntil": null,
+    "nextRetryAt": "2026-11-13T09:07:00.841Z",
+    "audit": [
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "REQUEST_RECEIVED",
+        "from": null,
+        "to": "RECEIVED",
+        "actor": "api",
+        "detail": {
+          "policyVersion": 1
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "ATTEMPT_STARTED",
+        "from": "RECEIVED",
+        "to": "PROCESSING",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "recoveredLease": false
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "DECISION_RECORDED",
+        "from": "PROCESSING",
+        "to": "RETRY_PENDING",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "reason": "Verification unavailable. A retry is needed.",
+          "matchedRule": null,
+          "nextRetryAt": "2026-11-13T09:07:00.841Z"
+        }
+      }
+    ],
+    "id": "000000000000000000000002",
+    "createdAt": "2026-11-13T09:06:59.841Z",
+    "updatedAt": "2026-11-13T09:06:59.841Z",
+    "reason": "Verification unavailable. A retry is needed.",
+    "matchedRule": null
+  },
+  "retryAfter": {
+    "workflowId": "vendor-approval",
+    "policyVersion": 1,
+    "policySnapshot": {
+      "id": "vendor-approval",
+      "name": "Vendor approval",
+      "version": 1,
+      "description": "Screen a supplier before they can be onboarded.",
+      "maxAttempts": 3,
+      "fields": {
+        "vendorName": {
+          "type": "string",
+          "required": true,
+          "minLength": 2
+        },
+        "annualSpend": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "riskScore": {
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "max": 100
+        },
+        "blacklisted": {
+          "type": "boolean",
+          "required": true
+        },
+        "documentsComplete": {
+          "type": "boolean",
+          "required": true
+        }
+      },
+      "stages": [
+        {
+          "id": "screening",
+          "name": "Initial screening",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-01",
+              "field": "blacklisted",
+              "operator": "eq",
+              "value": true,
+              "outcome": "REJECTED",
+              "reason": "Vendor is on the exclusion list."
+            },
+            {
+              "id": "VEN-02",
+              "field": "documentsComplete",
+              "operator": "eq",
+              "value": false,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Required vendor documents are missing."
+            }
+          ]
+        },
+        {
+          "id": "verification",
+          "name": "Compliance service",
+          "type": "dependency"
+        },
+        {
+          "id": "limits",
+          "name": "Risk and spend limits",
+          "type": "rules",
+          "rules": [
+            {
+              "id": "VEN-03",
+              "field": "riskScore",
+              "operator": "gte",
+              "value": 70,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Risk score is above the automatic approval threshold."
+            },
+            {
+              "id": "VEN-04",
+              "field": "annualSpend",
+              "operator": "gt",
+              "value": 500000,
+              "outcome": "MANUAL_REVIEW",
+              "reason": "Annual spend requires a second approval."
+            }
+          ]
+        }
+      ],
+      "defaultOutcome": "APPROVED",
+      "defaultReason": "Screening, verification and limits passed."
+    },
+    "idempotencyKey": "recorded-demo-vendor-02",
+    "payloadHash": "2540e7dd15677f42b4fc241d97990c56859511c082e63a709a81ad4ef9ecf795",
+    "data": {
+      "vendorName": "Northwind Supplies",
+      "annualSpend": 150000,
+      "riskScore": 19,
+      "blacklisted": false,
+      "documentsComplete": true
+    },
+    "simulation": "fail-once",
+    "status": "APPROVED",
+    "attempts": 2,
+    "trace": [
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-01",
+        "field": "blacklisted",
+        "operator": "eq",
+        "actual": false,
+        "expected": true,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-02",
+        "field": "documentsComplete",
+        "operator": "eq",
+        "actual": true,
+        "expected": false,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 1,
+        "stageId": "verification",
+        "stageName": "Compliance service",
+        "kind": "dependency",
+        "outcome": "TEMPORARY_FAILURE",
+        "reason": "Compliance service returned 503"
+      },
+      {
+        "attempt": 2,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-01",
+        "field": "blacklisted",
+        "operator": "eq",
+        "actual": false,
+        "expected": true,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 2,
+        "stageId": "screening",
+        "stageName": "Initial screening",
+        "kind": "rule",
+        "ruleId": "VEN-02",
+        "field": "documentsComplete",
+        "operator": "eq",
+        "actual": true,
+        "expected": false,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 2,
+        "stageId": "verification",
+        "stageName": "Compliance service",
+        "kind": "dependency",
+        "outcome": "OK",
+        "reference": "SIM-VENDOR-APPROVAL-2"
+      },
+      {
+        "attempt": 2,
+        "stageId": "limits",
+        "stageName": "Risk and spend limits",
+        "kind": "rule",
+        "ruleId": "VEN-03",
+        "field": "riskScore",
+        "operator": "gte",
+        "actual": 19,
+        "expected": 70,
+        "matched": false,
+        "reason": "Condition not met"
+      },
+      {
+        "attempt": 2,
+        "stageId": "limits",
+        "stageName": "Risk and spend limits",
+        "kind": "rule",
+        "ruleId": "VEN-04",
+        "field": "annualSpend",
+        "operator": "gt",
+        "actual": 150000,
+        "expected": 500000,
+        "matched": false,
+        "reason": "Condition not met"
+      }
+    ],
+    "decision": null,
+    "leaseUntil": null,
+    "nextRetryAt": null,
+    "audit": [
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "REQUEST_RECEIVED",
+        "from": null,
+        "to": "RECEIVED",
+        "actor": "api",
+        "detail": {
+          "policyVersion": 1
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "ATTEMPT_STARTED",
+        "from": "RECEIVED",
+        "to": "PROCESSING",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "recoveredLease": false
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "DECISION_RECORDED",
+        "from": "PROCESSING",
+        "to": "RETRY_PENDING",
+        "actor": "system",
+        "detail": {
+          "attempt": 1,
+          "reason": "Verification unavailable. A retry is needed.",
+          "matchedRule": null,
+          "nextRetryAt": "2026-11-13T09:07:00.841Z"
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.841Z",
+        "type": "ATTEMPT_STARTED",
+        "from": "RETRY_PENDING",
+        "to": "PROCESSING",
+        "actor": "system",
+        "detail": {
+          "attempt": 2,
+          "recoveredLease": false
+        }
+      },
+      {
+        "at": "2026-11-13T09:06:59.842Z",
+        "type": "DECISION_RECORDED",
+        "from": "PROCESSING",
+        "to": "APPROVED",
+        "actor": "system",
+        "detail": {
+          "attempt": 2,
+          "reason": "Screening, verification and limits passed.",
+          "matchedRule": null,
+          "nextRetryAt": null
+        }
+      }
+    ],
+    "id": "000000000000000000000002",
+    "createdAt": "2026-11-13T09:06:59.841Z",
+    "updatedAt": "2026-11-13T09:06:59.842Z",
+    "reason": "Screening, verification and limits passed.",
+    "matchedRule": null
+  }
+}

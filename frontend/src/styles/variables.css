@@ -1,0 +1,67 @@
+:root {
+  /* Color Palette — Clean Fintech Internal Tooling */
+  --bg-main: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f3f5;
+  --bg-active: #e7f1ff;
+
+  --text-primary: #202124;
+  --text-secondary: #667085;
+  --text-muted: #9aa2b1;
+  --text-inverse: #ffffff;
+
+  --border-color: #e5e7eb;
+  --border-hover: #cbd5e1;
+  --border-active: #2563eb;
+
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+
+  /* Lifecycle Status Colors */
+  --status-approved-text: #15803d;
+  --status-approved-bg: #f0fdf4;
+  --status-approved-border: #bbf7d0;
+
+  --status-rejected-text: #b42318;
+  --status-rejected-bg: #fef3f2;
+  --status-rejected-border: #fecdca;
+
+  --status-review-text: #b7791f;
+  --status-review-bg: #fffbeb;
+  --status-review-border: #fef08a;
+
+  --status-retry-text: #2563eb;
+  --status-retry-bg: #eff6ff;
+  --status-retry-border: #bfdbfe;
+
+  --status-failed-text: #b42318;
+  --status-failed-bg: #fef3f2;
+  --status-failed-border: #fecdca;
+
+  --status-processing-text: #475467;
+  --status-processing-bg: #f2f4f7;
+  --status-processing-border: #d0d5dd;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  /* Border Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Dimensions */
+  --sidebar-width: 250px;
+  --header-height: 64px;
+}
+

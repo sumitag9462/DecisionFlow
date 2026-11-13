@@ -1,0 +1,71 @@
+# REST Client examples. Start MongoDB + backend first.
+# Submit the same request twice to test replay. Change annualSpend
+# but reuse its key to check the HTTP 409 conflict.
+
+@base = http://localhost:3001/api
+
+### List configurations
+GET {{base}}/workflows
+
+### Approved vendor
+POST {{base}}/requests
+Content-Type: application/json
+Idempotency-Key: example-vendor-001
+
+{
+  "workflowId": "vendor-approval",
+  "data": {
+    "vendorName": "Northwind Supplies",
+    "annualSpend": 150000,
+    "riskScore": 19,
+    "blacklisted": false,
+    "documentsComplete": true
+  },
+  "simulation": "ok"
+}
+
+### Rejection without external call
+POST {{base}}/requests
+Content-Type: application/json
+Idempotency-Key: example-vendor-002
+
+{
+  "workflowId": "vendor-approval",
+  "data": {
+    "vendorName": "Southwind Traders",
+    "annualSpend": 150000,
+    "riskScore": 19,
+    "blacklisted": true,
+    "documentsComplete": true
+  }
+}
+
+### External verification fails once. Retry using returned id.
+POST {{base}}/requests
+Content-Type: application/json
+Idempotency-Key: example-vendor-003
+
+{
+  "workflowId": "vendor-approval",
+  "data": {
+    "vendorName": "Northwind Supplies",
+    "annualSpend": 150000,
+    "riskScore": 19,
+    "blacklisted": false,
+    "documentsComplete": true
+  },
+  "simulation": "fail-once"
+}
+
+### Retry (replace ID)
+POST {{base}}/requests/REPLACE_WITH_ID/retry
+
+### Manual review decision (replace ID)
+POST {{base}}/requests/REPLACE_WITH_ID/review
+Content-Type: application/json
+
+{
+  "decision": "APPROVED",
+  "reason": "Documents verified by reviewer",
+  "reviewer": "Demo reviewer"
+}

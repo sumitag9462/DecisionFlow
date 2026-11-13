@@ -1,0 +1,252 @@
+{
+  "info": {
+    "name": "DecisionFlow | ScoreMe Exercise",
+    "description": "Local API examples. Reusing a key returns the original request; use a new key for each scenario.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api"
+    },
+    {
+      "key": "requestId",
+      "value": "REPLACE_WITH_ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "List workflow definitions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/workflows",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "workflows"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Approve vendor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"workflowId\": \"vendor-approval\",\n  \"idempotencyKey\": \"postman-vendor-001\",\n  \"data\": {\n    \"vendorName\": \"Northwind Supplies\",\n    \"annualSpend\": 150000,\n    \"riskScore\": 19,\n    \"blacklisted\": false,\n    \"documentsComplete\": true\n  },\n  \"simulation\": \"ok\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Reject vendor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"workflowId\": \"vendor-approval\",\n  \"idempotencyKey\": \"postman-vendor-002\",\n  \"data\": {\n    \"vendorName\": \"Northwind Supplies\",\n    \"annualSpend\": 150000,\n    \"riskScore\": 19,\n    \"blacklisted\": true,\n    \"documentsComplete\": true\n  },\n  \"simulation\": \"ok\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Manual review vendor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"workflowId\": \"vendor-approval\",\n  \"idempotencyKey\": \"postman-vendor-003\",\n  \"data\": {\n    \"vendorName\": \"Northwind Supplies\",\n    \"annualSpend\": 650000,\n    \"riskScore\": 19,\n    \"blacklisted\": false,\n    \"documentsComplete\": true\n  },\n  \"simulation\": \"ok\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Dependency fails once",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"workflowId\": \"vendor-approval\",\n  \"idempotencyKey\": \"postman-vendor-004\",\n  \"data\": {\n    \"vendorName\": \"Northwind Supplies\",\n    \"annualSpend\": 150000,\n    \"riskScore\": 19,\n    \"blacklisted\": false,\n    \"documentsComplete\": true\n  },\n  \"simulation\": \"fail-once\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Claim decision",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"workflowId\": \"claim-processing\",\n  \"idempotencyKey\": \"postman-claim-001\",\n  \"data\": {\n    \"claimReference\": \"CLM-2026-014\",\n    \"claimAmount\": 25000,\n    \"policyActive\": true,\n    \"documentsComplete\": true,\n    \"fraudScore\": 15\n  },\n  \"simulation\": \"ok\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Retry by ID",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/requests/{{requestId}}/retry",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests",
+            "{{requestId}}",
+            "retry"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Review by ID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests/{{requestId}}/review",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests",
+            "{{requestId}}",
+            "review"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reason\": \"Documents verified by reviewer\",\n  \"reviewer\": \"Demo reviewer\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Inspect by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/requests/{{requestId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests",
+            "{{requestId}}"
+          ]
+        }
+      }
+    }
+  ]
+}

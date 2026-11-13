@@ -1,0 +1,7 @@
+{
+  "note": "Example of a rule change. To use it, change the limits stage VEN-04 value in vendor-approval.json from 500000 to 250000 and increment version from 1 to 2. Restart backend. Existing requests continue to use their stored version 1 snapshot.",
+  "ruleId": "VEN-04",
+  "oldThreshold": 500000,
+  "newThreshold": 250000,
+  "nextVersion": 2
+}
