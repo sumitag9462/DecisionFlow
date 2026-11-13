@@ -128,4 +128,6 @@ Detailed engineering documentation is located in the `docs/` directory:
 - [TRADEOFFS.md](docs/TRADEOFFS.md) — Defended engineering trade-offs (e.g., MongoDB CAS vs Kafka/Redis, in-memory What-If simulation, zero-dependency auth).
 - [REVIEW_FIXES.md](docs/REVIEW_FIXES.md) — Technical post-mortem of resolved edge cases (Schema bump replay order, final-attempt worker crash recovery).
 - [TEST_RESULTS.md](docs/TEST_RESULTS.md) — Full automated test execution evidence (59 passing tests).
+- [DECISION_EXAMPLES.md](docs/DECISION_EXAMPLES.md) — Concrete decision explanation examples with rule traces and audit chains.
+- [SCOREME_EVALUATION_MAPPING.md](docs/SCOREME_EVALUATION_MAPPING.md) — 1:1 mapping against the official 100-mark ScoreMe hackathon criteria.
 - [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) — Step-by-step 3-minute evaluator presentation script.
