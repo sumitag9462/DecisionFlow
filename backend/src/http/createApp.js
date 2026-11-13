@@ -59,24 +59,24 @@ function createApp(service, { origin = 'http://localhost:5173' } = {}) {
   }));
 
   // Metrics Aggregation
-  app.get('/api/metrics', route(async (_req, res) => {
+  app.get('/api/metrics', requireAuth, route(async (_req, res) => {
     const metrics = await service.getMetrics();
     res.json(metrics);
   }));
 
   // What-If Policy Simulation (Non-destructive)
-  app.post('/api/simulate', route(async (req, res) => {
+  app.post('/api/simulate', requireAuth, route(async (req, res) => {
     const { workflowId, data, proposedThresholds, simulation } = req.body || {};
     const result = await service.simulate({ workflowId, data, proposedThresholds, simulation });
     res.json(result);
   }));
 
-  // Workflow Definitions
+  // Workflow Definitions (Public schema discovery)
   app.get('/api/workflows', route(async (_req, res) => res.json(service.listPolicies())));
   app.get('/api/workflows/:id', route(async (req, res) => res.json(service.getPolicy(req.params.id))));
 
-  // Request Management
-  app.get('/api/requests', route(async (req, res) => {
+  // Request Management (Authenticated)
+  app.get('/api/requests', requireAuth, route(async (req, res) => {
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 25));
     const page = Math.max(1, Number(req.query.page) || 1);
     const status = req.query.status || undefined;
@@ -102,22 +102,22 @@ function createApp(service, { origin = 'http://localhost:5173' } = {}) {
     res.json(items);
   }));
 
-  app.get('/api/requests/:id', route(async (req, res) => {
+  app.get('/api/requests/:id', requireAuth, route(async (req, res) => {
     assertId(req.params.id);
     const record = await service.get(req.params.id);
     if (!record) throw new AppError(404, 'NOT_FOUND', 'Request not found');
     res.json(record);
   }));
 
-  // Evidence Packet Export
-  app.get('/api/requests/:id/evidence', route(async (req, res) => {
+  // Evidence Packet Export (Authenticated)
+  app.get('/api/requests/:id/evidence', requireAuth, route(async (req, res) => {
     assertId(req.params.id);
     const evidence = await service.getEvidence(req.params.id);
     res.json(evidence);
   }));
 
-  // Audit Integrity Chain Verification
-  app.get('/api/requests/:id/verify-audit', route(async (req, res) => {
+  // Audit Integrity Chain Verification (Authenticated)
+  app.get('/api/requests/:id/verify-audit', requireAuth, route(async (req, res) => {
     assertId(req.params.id);
     const record = await service.get(req.params.id);
     if (!record) throw new AppError(404, 'NOT_FOUND', 'Request not found');
@@ -125,7 +125,7 @@ function createApp(service, { origin = 'http://localhost:5173' } = {}) {
     res.json({ id: record.id, integrity });
   }));
 
-  app.post('/api/requests', route(async (req, res) => {
+  app.post('/api/requests', requireAuth, route(async (req, res) => {
     const body = req.body || {};
     const { request, replayed } = await service.submit({
       workflowId: body.workflowId,
@@ -136,7 +136,7 @@ function createApp(service, { origin = 'http://localhost:5173' } = {}) {
     res.status(replayed ? 200 : 201).json({ replayed, request });
   }));
 
-  app.post('/api/requests/:id/retry', route(async (req, res) => {
+  app.post('/api/requests/:id/retry', requireRole('ADMIN', 'REVIEWER'), route(async (req, res) => {
     assertId(req.params.id);
     res.json(await service.retry(req.params.id));
   }));

@@ -1,7 +1,13 @@
 const crypto = require('node:crypto');
 const { AppError } = require('../domain/errors');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'decisionflow-development-secret-key-32chars';
+let JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable is required in production.');
+  }
+  JWT_SECRET = 'decisionflow-development-secret-key-32chars';
+}
 
 // Demo users database with scrypt password hashes
 const DEMO_USERS = [
@@ -71,7 +77,9 @@ function verifyToken(token) {
   }
 
   const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${payload}`).digest('base64url');
-  if (signature !== expectedSig) {
+  const sigBuf = Buffer.from(signature);
+  const expectedBuf = Buffer.from(expectedSig);
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
     throw new AppError(401, 'UNAUTHORIZED', 'Invalid token signature');
   }
 

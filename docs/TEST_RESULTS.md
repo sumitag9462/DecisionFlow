@@ -2,7 +2,7 @@
 
 **Date:** 13 November 2026  
 **Environment:** macOS (Node.js v26.13.1, MongoDB Community v8.3.3)  
-**Total Automated Tests:** 59 passing across 3 distinct test suites (0 failures, 0 skipped, fail-closed)  
+**Total Automated Tests:** 61 passing across 3 distinct test suites (0 failures, 0 skipped, fail-closed)  
 
 ---
 
@@ -10,13 +10,13 @@
 
 | Test Suite | Runner | Test Target | Passed | Failed | Skipped | Time |
 |---|---|---|---:|---:|---:|---:|
-| **Core Domain Suite** | Node.js built-in (`node:test`) | Engine, validation, policy versioning, FakeRepository, hash chaining, what-if simulation, evidence packet, prototype pollution defense | 28 | 0 | 0 | 68 ms |
-| **HTTP API Suite** | Jest + Supertest | Express routes, middleware, security headers, correlation IDs, RBAC with Bearer JWTs, metrics, simulation, evidence | 15 | 0 | 0 | 340 ms |
+| **Core Domain Suite** | Node.js built-in (`node:test`) | Engine, validation, policy versioning, FakeRepository, hash chaining, what-if simulation, evidence packet, prototype pollution defense | 28 | 0 | 0 | 67 ms |
+| **HTTP API Suite** | Jest + Supertest | Express routes, security headers, correlation IDs, RFC 7519 JWT auth, RBAC enforcement, timing-safe signatures, metrics, simulation, evidence | 17 | 0 | 0 | 330 ms |
 | **MongoDB Integration Suite** | Jest + Mongoose | Live MongoDB queries (mongodb://127.0.0.1:27017), atomic CAS, compound indexes, concurrency races, crash recovery, fail-closed assertions | 16 | 0 | 0 | 280 ms |
-| **Frontend Production Build** | Vite | React 18 production bundle compilation (35 modules transformed) | 1 | 0 | 0 | 277 ms |
-| **Live REST End-to-End Suite** | curl / HTTP | Running backend (:3001) + live MongoDB Community 8.3 (:27017) | 14 | 0 | 0 | Live |
+| **Frontend Production Build** | Vite | React 18 production bundle compilation (36 modules transformed, zero warnings) | 1 | 0 | 0 | 306 ms |
+| **Live REST End-to-End Suite** | curl / HTTP | Running backend (:3001) + live MongoDB Community 8.3 (:27017) | 16 | 0 | 0 | Live |
 
-**Total Automated Test Count:** **59 Passing Tests**
+**Total Automated Test Count:** **61 Passing Tests**
 
 ---
 
@@ -25,32 +25,32 @@
 Command: `node --test tests/core.node.test.js`
 
 ```text
-✔ loads two separate valid workflow definitions (1.15ms)
-✔ approves vendor with no rule match (1.72ms)
+✔ loads two separate valid workflow definitions (0.90ms)
+✔ approves vendor with no rule match (1.91ms)
 ✔ rejects blacklisted vendor before external verification (0.29ms)
-✔ routes missing vendor documents to manual review (0.23ms)
-✔ flags high annual spend for review (0.25ms)
-✔ claim workflow rejects inactive policy (0.22ms)
+✔ routes missing vendor documents to manual review (0.26ms)
+✔ flags high annual spend for review (0.26ms)
+✔ claim workflow rejects inactive policy (0.24ms)
 ✔ claim workflow routes fraud risk to review (0.22ms)
-✔ fails once, persists retry state, then succeeds (0.54ms)
-✔ permanent dependency failures stop after configured attempts (0.49ms)
-✔ identical idempotency key returns the original record without repeating work (0.27ms)
-✔ reused idempotency key with different payload is a conflict (0.23ms)
-✔ twenty parallel identical intakes create only one document (0.86ms)
-✔ manual reviewer can approve a request with an auditable reason (0.29ms)
-✔ rejects invalid data, including fields absent from schema (0.12ms)
-✔ rule edit affects new requests, not old version-pinned requests (0.32ms)
+✔ fails once, persists retry state, then succeeds (0.58ms)
+✔ permanent dependency failures stop after configured attempts (0.50ms)
+✔ identical idempotency key returns the original record without repeating work (0.28ms)
+✔ reused idempotency key with different payload is a conflict (0.24ms)
+✔ twenty parallel identical intakes create only one document (0.96ms)
+✔ manual reviewer can approve a request with an auditable reason (0.33ms)
+✔ rejects invalid data, including fields absent from schema (0.13ms)
+✔ rule edit affects new requests, not old version-pinned requests (0.31ms)
 ✔ lease expiry allows manual recovery of a crashed worker (0.30ms)
-✔ one actor wins a concurrent retry claim (0.51ms)
-✔ audit events have accurate state transitions and rule references (0.61ms)
-✔ same key can be used for independent workflows (0.28ms)
-✔ idempotency replay succeeds after policy adds a required field (0.21ms)
-✔ final-attempt worker crash recovers to FAILED on lease expiry (0.47ms)
-✔ repeated recovery on final-attempt crash does not duplicate events (0.56ms)
-✔ what-if simulation runs non-destructively without persisting to database (0.18ms)
-✔ audit hash chain verifies genuine records and detects tampering (0.26ms)
-✔ evidence packet contains certified payload, trace, policy snapshot, and audit chain (0.20ms)
-✔ metrics aggregation computes status distribution and averages (0.36ms)
+✔ one actor wins a concurrent retry claim (0.50ms)
+✔ audit events have accurate state transitions and rule references (0.41ms)
+✔ same key can be used for independent workflows (0.26ms)
+✔ idempotency replay succeeds after policy adds a required field (0.19ms)
+✔ final-attempt worker crash recovers to FAILED on lease expiry (0.55ms)
+✔ repeated recovery on final-attempt crash does not duplicate events (0.53ms)
+✔ what-if simulation runs non-destructively without persisting to database (0.22ms)
+✔ audit hash chain verifies genuine records and detects tampering (0.29ms)
+✔ evidence packet contains certified payload, trace, policy snapshot, and audit chain (0.22ms)
+✔ metrics aggregation computes status distribution and averages (0.37ms)
 ✔ what-if simulation rejects prototype pollution and invalid overrides (0.13ms)
 ✔ audit verification identifies legacy unhashed records as UNVERIFIABLE_LEGACY (0.07ms)
 ℹ tests 28
@@ -60,7 +60,7 @@ Command: `node --test tests/core.node.test.js`
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 68.83ms
+ℹ duration_ms 67.05ms
 ```
 
 ---
@@ -71,24 +71,26 @@ Command: `jest tests/http.jest.test.js --runInBand`
 
 ```text
 PASS tests/http.jest.test.js
-  ✓ health and workflow metadata are readable (12 ms)
+  ✓ health and workflow metadata are publicly readable without auth (12 ms)
+  ✓ unauthenticated access to protected routes returns 401 UNAUTHORIZED (4 ms)
+  ✓ invalid or expired token returns 401 (3 ms)
   ✓ submits a request and returns a detailed trace (6 ms)
-  ✓ replaying the same idempotency key returns 200, not a second decision (1 ms)
+  ✓ replaying the same idempotency key returns 200, not a second decision (2 ms)
   ✓ same key with changed input returns a conflict (2 ms)
   ✓ invalid input returns structured field errors (1 ms)
-  ✓ transient external failure can be retried through REST (2 ms)
+  ✓ transient external failure can be retried through REST (3 ms)
   ✓ manual reviewer decision leaves an audit event (3 ms)
   ✓ bad request ID returns 400 (1 ms)
   ✓ security headers and correlation ID are set on all responses (2 ms)
   ✓ auth endpoints allow demo login and retrieve current profile (3 ms)
-  ✓ RBAC rejects review by VIEWER role with 403 Forbidden (3 ms)
+  ✓ RBAC rejects review by VIEWER role with 403 Forbidden (4 ms)
   ✓ what-if simulation rejects invalid threshold types with 400 (1 ms)
   ✓ metrics endpoint aggregates operational numbers (1 ms)
   ✓ what-if simulation endpoint returns comparison without mutating data (2 ms)
   ✓ evidence and audit verification endpoints produce certified payloads (3 ms)
 
 Test Suites: 1 passed, 1 total
-Tests:       15 passed, 15 total
+Tests:       17 passed, 17 total
 ```
 
 ---

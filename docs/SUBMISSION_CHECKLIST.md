@@ -5,9 +5,10 @@ Before submitting the repository for the ScoreMe Hackathon, verify each item:
 - [x] **MongoDB running:** MongoDB Community Server (v8.x) running locally on port 27017 or MongoDB Atlas connection configured.
 - [x] **Backend dependencies installed:** `cd backend && npm install`.
 - [x] **Core unit test suite passing:** `cd backend && npm run test:core` (28/28 tests passing).
-- [x] **HTTP API test suite passing:** `cd backend && npm test` (15/15 tests passing).
+- [x] **HTTP API test suite passing:** `cd backend && npm test` (17/17 tests passing).
 - [x] **Real MongoDB integration test suite passing:** `cd backend && npm run test:integration` (16/16 tests passing against real mongod, fail-closed, 0 skipped).
-- [x] **Frontend production build:** `cd frontend && npm install && npm run build` (builds cleanly without errors, 35 modules).
+- [x] **Total automated tests passing:** 61/61 tests passing across 3 test suites.
+- [x] **Frontend production build:** `cd frontend && npm install && npm run build` (builds cleanly without errors or warnings, 36 modules).
 - [x] **All edge cases & bug fixes verified:**
   - Idempotency replay works across policy schema version bumps.
   - Crashed worker on final attempt recovers safely to `FAILED` with audit entry.

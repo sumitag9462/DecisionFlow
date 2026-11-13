@@ -30,9 +30,9 @@ async function main() {
 }
 
 main().catch(err => {
-  const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/decisionflow';
   if (err.message && (err.message.includes('ECONNREFUSED') || err.message.includes('Server selection timed out'))) {
-    console.error(`\n[DecisionFlow] MongoDB connection failed at ${mongoUri}`);
+    console.error('\n[DecisionFlow] Database connection failed.');
+    console.error('Check MONGO_URI, network access, and database credentials.');
     console.error('Ensure MongoDB is installed and running:');
     console.error('  macOS: mongod --config /opt/homebrew/etc/mongod.conf');
     console.error('  Linux: sudo systemctl start mongod\n');
